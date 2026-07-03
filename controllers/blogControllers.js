@@ -21,7 +21,23 @@ const createBlog = async(req, res) => {
 
 const getBlogs = async(req, res) => {
   try{
-    const blogs = await blog.find(); 
+    const { author, tag, sort } = req.query;
+    let filter = {};
+    if(author){
+      filter.author = author;
+    }
+    if(tag){
+      filter.tags = tag;
+    }
+
+    let sortOption = {};
+    if(sort === "newest"){
+      sortOption = { createdAt: -1 };
+    } else if(sort === "oldest"){
+      sortOption = { createdAt: 1 };
+    }
+
+    const blogs = await blog.find(filter).sort(sortOption);
 
     res.status(200).json(blogs);
   } 
