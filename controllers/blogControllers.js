@@ -30,4 +30,44 @@ const getBlogs = async(req, res) => {
   }
 }
 
-module.exports = { createBlog, getBlogs };
+const getBlogById = async(req, res) => {
+  try{
+    const blogs = await blog.findById(req.params.id);
+    if(!blogs){
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    res.status(201).json(blogs);
+  } catch(err){
+    res.status(500).json({ message: err.message })
+  }
+}
+
+const updateBlog = async(req, res) => {
+  try{
+    const blogs = await blog.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
+    
+    if(!blogs){
+      return res.status(400).json({ message: "Blog not found" });
+    }
+    res.status(201).json({ message: "Blog Updated successfully"}, blogs);
+  }
+  catch(err){
+    res.status(500).json({ message: err.message });
+  }
+}
+
+const deleteBlog = async(req, res) => {
+  try{
+    const blogs = await blog.findByIdAndDelete(req.params.id);
+
+    if(!blogs){
+      return res.status(400).json({ message: "Blog not found" });
+    }
+    res.status(200).json({ message: "Blog deleted successfully"}, blogs)
+  }
+  catch(err){
+    res.status(500).json({ message: err.message });
+  }
+}
+
+module.exports = { createBlog, getBlogs, getBlogById, updateBlog, deleteBlog };
