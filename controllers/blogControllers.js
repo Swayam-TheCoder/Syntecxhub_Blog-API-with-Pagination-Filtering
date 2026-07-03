@@ -21,6 +21,7 @@ const createBlog = async(req, res) => {
 
 const getBlogs = async(req, res) => {
   try{
+    // filtering
     const { author, tag, sort } = req.query;
     let filter = {};
     if(author){
@@ -30,6 +31,7 @@ const getBlogs = async(req, res) => {
       filter.tags = tag;
     }
 
+    // Sorting
     let sortOption = {};
     if(sort === "newest"){
       sortOption = { createdAt: -1 };
@@ -37,7 +39,12 @@ const getBlogs = async(req, res) => {
       sortOption = { createdAt: 1 };
     }
 
-    const blogs = await blog.find(filter).sort(sortOption);
+    // pagination
+    const page = parseInt(req.query.page) || 1;
+    const Limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * Limit;
+
+    const blogs = await blog.find(filter).sort(sortOption).skip(skip).limit(Limit);
 
     res.status(200).json(blogs);
   } 
